@@ -4,6 +4,8 @@ import discord4j.rest.http.client.ClientException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class ReaderThread extends Thread{
@@ -31,7 +33,7 @@ public class ReaderThread extends Thread{
                                     e.addField("Word", x.toString(), true);
                                     e.addField("Instances", y.toString(), true);
 
-                                    e.setFooter("Stats since " + BotUtils.sdf.format(new Date(q.guild.getJoinTime().toEpochMilli())), null);
+                                    //e.setFooter("Stats since " + BotUtils.sdf.format(new Date(q.guild.getJoinTime().toEpochMilli())), null);
                                 };
 
                                 BotUtils.sendMessage(q.channel, spec);
@@ -112,6 +114,7 @@ public class ReaderThread extends Thread{
                                     StringBuilder y = new StringBuilder();
 
                                     top.forEach(z -> {
+                                        System.out.println(z + " :: " + z.name + " :: " + z.name.length());
                                         x.append(BotUtils.capitalizeFirst(z.name)).append("\n");
                                         y.append(z.value).append("\n");
                                     });
@@ -186,7 +189,7 @@ public class ReaderThread extends Thread{
                                     e.addField("Symbol", x.toString(), true);
                                     e.addField("Instances", y.toString(), true);
 
-                                    e.setFooter("Stats since " + BotUtils.sdf.format(new Date(q.guild.getJoinTime().toEpochMilli())), null);
+                                    //e.setFooter("Stats since " + BotUtils.sdf.format(new Date(q.guild.getJoinTime().toEpochMilli())), null);
                                 };
 
                                 BotUtils.sendMessage(q.channel, spec);
@@ -245,6 +248,26 @@ public class ReaderThread extends Thread{
                                     e.setDescription("Statistics for symbol " + finalW.name);
                                     e.addField("Count", finalW.value + "", true);
                                     e.addField("Is basic ASCII?", (int) finalW.name.charAt(0) > 255 ? "No" : "Yes", false);
+
+                                    //e.setFooter("Stats since " + BotUtils.sdf.format(new Date(q.guild.getJoinTime().toEpochMilli())), null);
+                                };
+
+                                BotUtils.sendMessage(q.channel, spec);
+                                break;
+                            }
+                            case READ_SINGLE_EMOTE:{
+                                Word w = DataProcessor.getEmote(q.serverID, q.parameter);
+                                Consumer<EmbedCreateSpec> spec;
+
+                                if(w == null){
+                                    w = new Word(q.parameter, 0);
+                                }
+
+                                Word finalW = w;
+                                spec = e -> {
+                                    e.setDescription("Statistics for emote " + finalW.name);
+                                    e.addField("Count", finalW.value + "", true);
+                                    e.addField("Is discord emote?", finalW.name.length() > 10 ? "No" : "Yes", false);
 
                                     //e.setFooter("Stats since " + BotUtils.sdf.format(new Date(q.guild.getJoinTime().toEpochMilli())), null);
                                 };
@@ -492,6 +515,63 @@ public class ReaderThread extends Thread{
                                 };
 
                                 BotUtils.sendMessage(q.channel, spec);
+                                break;
+                            }
+                            case READ_SINGLE_EMOTE_CHANNEL:{
+                                Word w = DataProcessor.getEmoteChannel(q.serverID, q.additionalParameters[0], q.parameter);
+                                Consumer<EmbedCreateSpec> spec;
+
+                                if(w == null){
+                                    w = new Word(q.parameter, 0);
+                                }
+
+                                Word finalW = w;
+                                spec = e -> {
+                                    e.setDescription("Emote statistics for " + q.parameter + " in <#" + q.additionalParameters[0] + ">");
+                                    e.addField("Count", finalW.value + "", false);
+                                    e.addField("Is Discord emote?", finalW.name.length() < 10 ? "Yes" : "No", true);
+
+                                    //e.setFooter("Stats since " + BotUtils.sdf.format(new Date(q.guild.getJoinTime().toEpochMilli())), null);
+                                };
+
+                                BotUtils.sendMessage(q.channel, spec);
+                                break;
+                            }
+
+                            case REMOVE_REDUNDANCY:{
+                                BinarySearchTree tree = DataProcessor.getServerObject(q.serverID).serverOverallData;
+
+                                ArrayList<Word> arrayListTree = tree.inorder();
+                                Set<Word> set = new HashSet<>(arrayListTree);
+
+                                BinarySearchTree newTree = new BinarySearchTree();
+                                for (Word w : set) {
+                                    newTree.insert(w);
+                                }
+
+                                DataProcessor.getServerObject(q.serverID).serverOverallData = newTree;
+
+                                BotUtils.sendMessage(q.channel, "Redundancies cleared for server maintable");
+                                break;
+                            }
+
+                            case REMOVE_CHANNEL_REDUNDANCY:{
+                                ServerObject obj = DataProcessor.getServerObject(q.serverID);
+                                obj.loadAllChannels();
+
+                                for (ServerObject.TreeMapPair pair : obj.channelPairs.values()) {
+                                    BinarySearchTree tree = pair.tree;
+                                    
+                                    Set<Word> words = new HashSet<>(tree.inorder());
+                                    BinarySearchTree newTree = new BinarySearchTree();
+                                    for (Word w : words) {
+                                        newTree.insert(w);
+                                    }
+
+                                    pair.tree = newTree;
+                                }
+
+                                BotUtils.sendMessage(q.channel, "Redundancies cleared for all channels");
                                 break;
                             }
 

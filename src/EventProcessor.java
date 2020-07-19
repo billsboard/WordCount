@@ -286,7 +286,21 @@ class EventProcessor {
                                 "SYMBOL::" + lowerArgs[1]));
                     }
                     else{
-                        DataProcessor.readerQueue.offer(new ReadQueueObject(channel, guild.getId().asString(), ReadOperations.READ_SINGLE_SYMBOL_CHANNEL,10, guild, lowerArgs[1]
+                        DataProcessor.readerQueue.offer(new ReadQueueObject(channel, guild.getId().asString(), ReadOperations.READ_SINGLE_SYMBOL_CHANNEL,10, guild, "SYMBOL::" + lowerArgs[1]
+                                , BotUtils.getUserFromMention(lowerArgs[2])));
+                    }
+                    break;
+                }
+                case "emotestat": case "emoji": case "emote":{
+                    if(lowerArgs.length < 2){
+                        BotUtils.sendArgumentsError(channel, "mentionstats", "user", "optional channel");
+                    }
+                    else if(lowerArgs.length == 2){
+                        DataProcessor.readerQueue.offer(new ReadQueueObject(channel, guild.getId().asString(), ReadOperations.READ_SINGLE_EMOTE,10, guild,
+                                "EMOTE::" + lowerArgs[1]));
+                    }
+                    else{
+                        DataProcessor.readerQueue.offer(new ReadQueueObject(channel, guild.getId().asString(), ReadOperations.READ_SINGLE_EMOTE_CHANNEL,10, guild, lowerArgs[1]
                                 , BotUtils.getUserFromMention(lowerArgs[2])));
                     }
                     break;
@@ -311,6 +325,11 @@ class EventProcessor {
                         }
                     }
 
+                    break;
+                }
+                case "removeredundancies":{
+                    DataProcessor.readerQueue.offer(new ReadQueueObject(channel, guild.getId().asString(), ReadOperations.REMOVE_REDUNDANCY, 0, guild));
+                    DataProcessor.readerQueue.offer(new ReadQueueObject(channel, guild.getId().asString(), ReadOperations.REMOVE_CHANNEL_REDUNDANCY, 0, guild));
                     break;
                 }
 

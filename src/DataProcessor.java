@@ -251,6 +251,16 @@ public class DataProcessor {
         return new Word(symbol.substring(8), servers.get(serverID).serverOverallMap.get(symbol));
     }
 
+    static Word getEmote(String serverID, String symbol){
+        loadServerObject(serverID);
+
+        if(!symbol.startsWith("EMOTE::")) {symbol = "EMOTE::" + symbol;}
+
+        if(servers.get(serverID).serverOverallMap.get(symbol) == null) return null;
+
+        return new Word(symbol.substring(7), servers.get(serverID).serverOverallMap.get(symbol));
+    }
+
     static ServerObject getServerObject(String serverID){
         loadServerObject(serverID);
         return servers.get(serverID);
@@ -498,6 +508,18 @@ public class DataProcessor {
         return new Word(word.substring(9), pair.map.get(word));
     }
 
+    static Word getEmoteChannel(String serverID, String channelID, String word) throws IOException {
+        loadServerObject(serverID);
+
+        if(!word.startsWith("EMOTE::")) word = "EMOTE::" + word;
+
+        ServerObject server = servers.get(serverID);
+        ServerObject.TreeMapPair pair = server.getChannelPair(channelID);
+
+        if(pair.map.get(word) == null) return null;
+
+        return new Word(word.substring(7), pair.map.get(word));
+    }
 
 
 
@@ -643,6 +665,7 @@ enum ReadOperations{
     EVERYTHING,
     BOTTOM,
     EMOTE,
+
     ALL_WORDS_CHANNEL,
     DICT_CHANNEL,
     NONDICT_CHANNEL,
@@ -651,10 +674,17 @@ enum ReadOperations{
     EVERYTHING_CHANNEL,
     BOTTOM_CHANNEL,
     EMOTE_CHANNEL,
+
     READ_SINGLE_WORD,
     READ_SINGLE_SYMBOL,
     READ_SINGLE_MENTION,
+    READ_SINGLE_EMOTE,
+
     READ_SINGLE_SYMBOL_CHANNEL,
     READ_SINGLE_MENTION_CHANNEL,
-    READ_SINGLE_WORD_CHANNEL
+    READ_SINGLE_WORD_CHANNEL,
+    READ_SINGLE_EMOTE_CHANNEL,
+
+    REMOVE_REDUNDANCY,
+    REMOVE_CHANNEL_REDUNDANCY
 }

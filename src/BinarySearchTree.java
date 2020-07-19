@@ -8,10 +8,11 @@ class Word implements Serializable {
     int value;
 
     Word(String name, int value){
-        this.name = name;
+        this.name = name.trim();
         this.value = value;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Word) {
             Word wObj = (Word) obj;

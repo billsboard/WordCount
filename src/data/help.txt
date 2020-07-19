@@ -5,7 +5,12 @@ dict (channel) :: Get most-used dictionary words
 nondict (channel) :: Get most-used non-dictionary words
 mentions (channel) :: Get most mentioned users
 symbols (channel) :: Get most-used symbols
-wordstats (channel) [word] :: Get stats for a certain word
-symbolstats (channel) [word] :: Get stats for a symbol
-mention (channel) [user] :: Get stats for a mentioned user
+emotes (channel) :: Get most-used emotes
+all (channel) :: All in one command for everything
+bottom (channel) :: Get least used words
+wordstats [word] (channel) :: Get stats for a certain word
+symbolstats [symbol] (channel) :: Get stats for a symbol
+emotestats [emote] (channel) :: Get stats for an emote
+mentionstats [user] (channel) :: Get stats for a mentioned user
 serverstats :: Get stats for the server
+clearredundancies :: Use if duplicate entries exist

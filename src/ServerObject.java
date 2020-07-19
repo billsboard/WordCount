@@ -133,6 +133,17 @@ public class ServerObject implements Serializable{
         return channelPairs.get(channelID);
     }
 
+    void loadAllChannels() throws IOException {
+        File directoryPath = new File(DataProcessor.savePath, serverID);
+        File fileList[] = directoryPath.listFiles();
+
+        for (File f : fileList) {
+            if(String.valueOf(f.getName().charAt(0)).matches("\\d")){
+                loadChannel(f.getName().replaceFirst("[.][^.]+$", ""));
+            }
+        }
+    }
+
 
 
     static class TreeMapPair implements Serializable {
