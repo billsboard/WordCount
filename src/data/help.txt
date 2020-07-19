@@ -1,0 +1,11 @@
+[[Commands]]
+help :: You already know what this is
+top (channel) :: Get most-used words
+dict (channel) :: Get most-used dictionary words
+nondict (channel) :: Get most-used non-dictionary words
+mentions (channel) :: Get most mentioned users
+symbols (channel) :: Get most-used symbols
+wordstats (channel) [word] :: Get stats for a certain word
+symbolstats (channel) [word] :: Get stats for a symbol
+mention (channel) [user] :: Get stats for a mentioned user
+serverstats :: Get stats for the server
